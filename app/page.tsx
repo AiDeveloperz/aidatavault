@@ -41,15 +41,16 @@ export default function Home() {
     setAppState('LOADING');
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/search`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+      const res = await fetch(`${API_BASE}/api/search`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: q }),
       });
 
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Search failed. Please try again.');
+      if (!res.ok || data.resultCount === 0) {
+        setError('Site may be under maintenance, try after sometime or contact devloper.');
         setAppState('IDLE');
         return;
       }
@@ -63,7 +64,7 @@ export default function Home() {
       });
       setAppState('PRE_PAYMENT');
     } catch (err) {
-      setError('Network error. Please check your connection.');
+      setError('Site may be under maintenance, try after sometime or contact devloper.');
       setAppState('IDLE');
     }
   }, []);
@@ -73,20 +74,21 @@ export default function Home() {
     setError(null);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/${searchResult.searchId}`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+      const res = await fetch(`${API_BASE}/api/results/${searchResult.searchId}`, {
         headers: { Authorization: `Bearer ${searchResult.token}` },
       });
 
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || 'Failed to fetch results.');
+      if (!res.ok || !data.records || data.records.length === 0) {
+        setError('Site may be under maintenance, try after sometime or contact devloper.');
         return;
       }
 
       setResultData(data);
       setAppState('RESULTS');
     } catch (err) {
-      setError('Failed to retrieve results. Please try again.');
+      setError('Site may be under maintenance, try after sometime or contact devloper.');
     }
   }, [searchResult]);
 
