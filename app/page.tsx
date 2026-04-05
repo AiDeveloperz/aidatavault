@@ -7,6 +7,7 @@ import PaymentPanel from '@/components/PaymentPanel';
 import ResultsTable from '@/components/ResultsTable';
 import Header from '@/components/Header';
 import Disclaimer from '@/components/Disclaimer';
+import Link from 'next/link';
 
 // ── State machine types ──────────────────────────────────────────────────────
 export type AppState =
@@ -182,7 +183,8 @@ export default function Home() {
 						<p className="text-sm font-medium mb-4 text-(--text-primary)">
 							Support, Connect & Collaborate
 						</p>
-						<a
+						<Link
+						target='_blank'
 							href="mailto:abdulazizindia@proton.me"
 							className="inline-flex items-center justify-center gap-2 text-sm px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-(--accent-light)"
 						>
@@ -198,7 +200,7 @@ export default function Home() {
 								<path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
 							</svg>
 							abdulazizindia@proton.me
-						</a>
+						</Link>
 					</div>
 				</div>
 			)}
