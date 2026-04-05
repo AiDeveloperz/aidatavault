@@ -130,7 +130,7 @@ export default function Home() {
 							</span>
 						</div>
 						<h1 className="text-5xl flex flex-col items-center gap-2 md:text-6xl font-black text-glow mb-6 tracking-tight">
-							<span>Data Valut</span>
+							<span>Data Vault</span>
 							<span className="text-violet-500 ml-8">Intelligence</span>
 						</h1>
 						<p className=" md:text-xl text-(--text-secondary) max-w-x2l mx-auto leading-none flex flex-col gap-2">
@@ -147,7 +147,7 @@ export default function Home() {
 					{/* Search Bar Wrapper */}
 					<div className="relative z-10 mx-auto w-full max-w-xl">
 						<div className="absolute -inset-1 bg-linear-to-r from-violet-600/30 to-indigo-600/30 rounded-2xl blur-xl opacity-50"></div>
-						<div className="relative">
+						<div className="">
 							<SearchBar onSearch={handleSearch} loading={false} />
 						</div>
 					</div>

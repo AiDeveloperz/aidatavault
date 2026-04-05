@@ -25,7 +25,7 @@ export default function SearchBar({ onSearch, loading = false }: Props) {
 			>
 				{/* Search icon */}
 				<div
-					className="flex-shrink-0 w-10 h-10 flex items-center justify-center"
+					className="shrink-0 w-10 h-10 flex items-center justify-center"
 					style={{ color: 'var(--text-muted)' }}
 				>
 					<svg
@@ -58,11 +58,13 @@ export default function SearchBar({ onSearch, loading = false }: Props) {
 					autoComplete="off"
 					spellCheck="false"
 				/>
+			</div>
 
+			<div className="flex items-center justify-center py-2 ">
 				<button
 					id="search-btn"
 					type="submit"
-					className="btn-primary flex-shrink-0"
+					className="btn-primary shrink-0 cursor-pointer"
 					disabled={loading || !value.trim()}
 					style={{ borderRadius: '8px', padding: '10px 22px' }}
 				>
@@ -72,7 +74,7 @@ export default function SearchBar({ onSearch, loading = false }: Props) {
 							Searching...
 						</>
 					) : (
-						<>Search</>
+						'Search'
 					)}
 				</button>
 			</div>
