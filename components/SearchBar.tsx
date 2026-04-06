@@ -44,7 +44,7 @@ export default function SearchBar({ onSearch, loading = false }: Props) {
 				<input
 					id="search-input"
 					type="text"
-					className="flex-1 bg-transparent border-0 outline-none text-base text-sm"
+					className="flex-1 min-w-0 w-full bg-transparent border-0 outline-none text-base text-sm"
 					style={{
 						color: 'var(--text-primary)',
 						fontFamily: 'Inter, sans-serif',

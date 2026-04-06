@@ -104,18 +104,7 @@ export default function ResultsTable({ data, query, searchResult, onNewSearch }:
         </div>
       </div>
 
-      {/* Description */}
-      {data.description && (
-        <div
-          className="card p-4 mb-5 text-sm"
-          style={{ color: 'var(--text-secondary)', borderColor: 'rgba(124,58,237,0.15)', lineHeight: 1.7 }}
-        >
-          <p className="text-xs font-bold mb-2" style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}>
-            SOURCE DESCRIPTION
-          </p>
-          {data.description}
-        </div>
-      )}
+
 
       {/* Summary stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
@@ -161,7 +150,7 @@ export default function ResultsTable({ data, query, searchResult, onNewSearch }:
       {/* Data table */}
       <div className="card overflow-hidden" style={{ borderColor: 'rgba(124,58,237,0.15)' }}>
         <div className="overflow-x-auto">
-          <table className="data-table">
+          <table className="data-table" style={{ minWidth: '600px' }}>
             <thead>
               <tr>
                 {['field', 'value', 'source'].map(col => (
@@ -208,7 +197,7 @@ export default function ResultsTable({ data, query, searchResult, onNewSearch }:
                           {row.field}
                         </span>
                       </td>
-                      <td className="mono" style={{ color: 'var(--text-primary)', maxWidth: '300px', wordBreak: 'break-all' }}>
+                      <td className="mono" style={{ color: 'var(--text-primary)', minWidth: '200px', maxWidth: '300px', wordBreak: 'break-all' }}>
                         {row.value}
                       </td>
                       <td>

@@ -1,15 +1,18 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import SearchBar from '@/components/SearchBar';
 import LoadingState from '@/components/LoadingState';
 import PaymentPanel from '@/components/PaymentPanel';
 import ResultsTable from '@/components/ResultsTable';
 import Header from '@/components/Header';
 import Disclaimer from '@/components/Disclaimer';
+import AccessGate from '@/components/AccessGate';
 
 // ── State machine types ──────────────────────────────────────────────────────
 export type AppState =
+	| 'INIT'
+	| 'ACCESS_GATE'
 	| 'IDLE'
 	| 'LOADING'
 	| 'PRE_PAYMENT'
@@ -34,11 +37,20 @@ export interface ResultData {
 
 // ── Main page ────────────────────────────────────────────────────────────────
 export default function Home() {
-	const [appState, setAppState] = useState<AppState>('IDLE');
+	const [appState, setAppState] = useState<AppState>('INIT');
 	const [query, setQuery] = useState('');
 	const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
 	const [resultData, setResultData] = useState<ResultData | null>(null);
 	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		const isUnlocked = localStorage.getItem('dv_access') === 'true';
+		if (isUnlocked) {
+			setAppState('IDLE');
+		} else {
+			setAppState('ACCESS_GATE');
+		}
+	}, []);
 
 	const handleSearch = useCallback(async (q: string) => {
 		setQuery(q);
@@ -47,17 +59,22 @@ export default function Home() {
 
 		try {
 			const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+			const accessCode = localStorage.getItem('dv_access_code') || '';
 			const res = await fetch(`${API_BASE}/api/search`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ query: q }),
+				body: JSON.stringify({ query: q, accessCode }),
 			});
 
 			const data = await res.json();
-			if (!res.ok || data.resultCount === 0) {
-				setError(
-					'Site may be under maintenance, try after sometime or contact devloper.',
-				);
+			if (!res.ok) {
+				setError(data.error || 'Site may be under maintenance, try after sometime or contact developer.');
+				setAppState('IDLE');
+				return;
+			}
+
+			if (data.resultCount === 0) {
+				setError('No breach records found for this query.');
 				setAppState('IDLE');
 				return;
 			}
@@ -72,7 +89,7 @@ export default function Home() {
 			setAppState('PRE_PAYMENT');
 		} catch (err) {
 			setError(
-				'Site may be under maintenance, try after sometime or contact devloper.',
+				'Site may be under maintenance, try after sometime or contact developer.',
 			);
 			setAppState('IDLE');
 		}
@@ -94,7 +111,7 @@ export default function Home() {
 			const data = await res.json();
 			if (!res.ok || !data.records || data.records.length === 0) {
 				setError(
-					'Site may be under maintenance, try after sometime or contact devloper.',
+					'Site may be under maintenance, try after sometime or contact developer.',
 				);
 				return;
 			}
@@ -103,7 +120,7 @@ export default function Home() {
 			setAppState('RESULTS');
 		} catch (err) {
 			setError(
-				'Site may be under maintenance, try after sometime or contact devloper.',
+				'Site may be under maintenance, try after sometime or contact developer.',
 			);
 		}
 	}, [searchResult]);
@@ -118,6 +135,18 @@ export default function Home() {
 
 	return (
 		<div className="w-full flex flex-col items-center justify-start px-4 pb-20 mt-16 md:mt-24">
+			{/* INIT state */}
+			{appState === 'INIT' && (
+				<div className="flex items-center justify-center min-h-[50vh]">
+					<div className="w-6 h-6 border-2 border-violet-500/30 border-t-violet-500 rounded-full animate-spin"></div>
+				</div>
+			)}
+
+			{/* ACCESS_GATE state */}
+			{appState === 'ACCESS_GATE' && (
+				<AccessGate onAccessGranted={() => setAppState('IDLE')} />
+			)}
+
 			{/* Hero + Search — always visible in IDLE */}
 			{appState === 'IDLE' && (
 				<div className="w-full max-w-2xl fade-in-up">
@@ -130,12 +159,12 @@ export default function Home() {
 							</span>
 						</div>
 						<h1 className="text-5xl flex flex-col items-center gap-2 md:text-6xl font-black text-glow mb-6 tracking-tight">
-							<span>Data Valut</span>
+							<span>Data Vault</span>
 							<span className="text-violet-500 ml-8">Intelligence</span>
 						</h1>
 						<p className=" md:text-xl text-(--text-secondary) max-w-x2l mx-auto leading-none flex flex-col gap-2">
 							<span className="text-[14px] font-medium">
-								Search accross breach intelligence databased for security
+								Search across breach intelligence databases for security
 								research
 							</span>
 							<span className="text-[14px] font-medium">
@@ -199,6 +228,16 @@ export default function Home() {
 							</svg>
 							abdulazizindia@proton.me
 						</a>
+					</div>
+
+					{/* Credits */}
+					<div className="mt-8 text-center text-xs text-(--text-muted) flex flex-col items-center gap-1 opacity-75 hover:opacity-100 transition-opacity">
+						<p>
+							Developed by <a href="https://github.com/AiDeveloperz" target="_blank" rel="noopener noreferrer" className="text-(--text-primary) hover:text-(--accent-light) transition-colors underline decoration-white/20 underline-offset-2 font-medium">AiDeveloperz</a>
+						</p>
+						<p>
+							Frontend Design by <a href="https://github.com/farazz23" target="_blank" rel="noopener noreferrer" className="text-(--text-primary) hover:text-(--accent-light) transition-colors underline decoration-white/20 underline-offset-2 font-medium">farazz23</a>
+						</p>
 					</div>
 				</div>
 			)}
