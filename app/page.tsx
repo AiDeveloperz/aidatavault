@@ -54,9 +54,18 @@ export default function Home() {
 	}, []);
 
 	const handleSearch = useCallback(async (rawQuery: string) => {
-		let formattedQuery = rawQuery.replace(/\s+/g, '');
-		if (/^\d{10}$/.test(formattedQuery)) {
-			formattedQuery = `+91${formattedQuery}`;
+		let formattedQuery = rawQuery;
+		
+		// Only format if it's not an email
+		if (!formattedQuery.includes('@')) {
+			const digitsOnly = formattedQuery.replace(/\D/g, '');
+			// If exactly 10 digits, add +91
+			if (digitsOnly.length === 10) {
+				formattedQuery = `+91${digitsOnly}`;
+			} else {
+				// Otherwise, just remove spaces and hyphens if it is an international format etc.
+				formattedQuery = formattedQuery.replace(/[\s\-()]+/g, '');
+			}
 		}
 
 		setQuery(formattedQuery);
