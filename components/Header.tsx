@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 interface Props {
 	onReset?: () => void;
 }
@@ -10,19 +12,15 @@ export default function Header() {
 			{/* Left Section */}
 			<div className="flex items-center gap-3">
 				{/* Logo Icon */}
-				<div className="flex items-center justify-center w-8 h-8 rounded-lg bg-violet-600/20 border border-violet-500/30">
-					<svg
-						width="18"
-						height="18"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="#9f67f5"
-						strokeWidth="2.5"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					>
-						<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-					</svg>
+				<div className="flex items-center justify-center w-8 h-8 rounded-lg bg-violet-600/20 border border-violet-500/30 overflow-hidden">
+					<Image 
+            src="/logo.png" 
+            alt="Data Vault Logo" 
+            width={24} 
+            height={24} 
+            className="object-contain" 
+            priority
+          />
 				</div>
 				<div className="flex items-center space-x-0 tracking-tight">
 					<h2 className="text-white text-xl font-bold">Data</h2>
