@@ -126,6 +126,27 @@ export default function PaymentPanel({ searchResult, onPaymentComplete, onBack }
         {/* ── STEP: info ────────────────────────────────────────────────────── */}
         {step === 'info' && (
           <div className="space-y-4">
+            {searchResult.availableFields && searchResult.availableFields.length > 0 && (
+              <div className="p-4 rounded-xl mb-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <p className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: 'var(--accent-light)' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                  Available Data Fields
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {searchResult.availableFields.map((field, idx) => (
+                    <span key={idx} className="px-2 py-1 text-xs rounded-md border" style={{ background: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.1)', color: 'var(--text-secondary)' }}>
+                      {field}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
             <div
               className="p-4 rounded-xl flex items-center gap-3"
               style={{ background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.2)' }}
@@ -136,7 +157,7 @@ export default function PaymentPanel({ searchResult, onPaymentComplete, onBack }
                   Unlock Full Data Package
                 </p>
                 <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                  Includes all fields: phone, address, full name, document IDs, region data
+                  Gain instant access to all discovered records and intelligence points
                 </p>
               </div>
               <div className="ml-auto text-right flex-shrink-0">

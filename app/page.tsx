@@ -24,6 +24,7 @@ export interface SearchResult {
 	resultCount: number;
 	leakCount: number;
 	source: string;
+	availableFields: string[];
 	token: string;
 }
 
@@ -84,6 +85,7 @@ export default function Home() {
 				resultCount: data.resultCount,
 				leakCount: data.leakCount,
 				source: data.source,
+				availableFields: data.availableFields || [],
 				token: data.token,
 			});
 			setAppState('PRE_PAYMENT');
