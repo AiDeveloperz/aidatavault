@@ -53,8 +53,13 @@ export default function Home() {
 		}
 	}, []);
 
-	const handleSearch = useCallback(async (q: string) => {
-		setQuery(q);
+	const handleSearch = useCallback(async (rawQuery: string) => {
+		let formattedQuery = rawQuery.replace(/\s+/g, '');
+		if (/^\d{10}$/.test(formattedQuery)) {
+			formattedQuery = `+91${formattedQuery}`;
+		}
+
+		setQuery(formattedQuery);
 		setError(null);
 		setAppState('LOADING');
 
@@ -64,7 +69,7 @@ export default function Home() {
 			const res = await fetch(`${API_BASE}/api/search`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ query: q, accessCode }),
+				body: JSON.stringify({ query: formattedQuery, accessCode }),
 			});
 
 			const data = await res.json();
