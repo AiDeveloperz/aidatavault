@@ -59,12 +59,17 @@ export default function Home() {
 		// Only format if it's not an email
 		if (!formattedQuery.includes('@')) {
 			const digitsOnly = formattedQuery.replace(/\D/g, '');
-			// If exactly 10 digits, add +91
+			// If exactly 10 digits, add 91 without the + sign
 			if (digitsOnly.length === 10) {
-				formattedQuery = `+91${digitsOnly}`;
+				formattedQuery = `91${digitsOnly}`;
 			} else {
-				// Otherwise, just remove spaces and hyphens if it is an international format etc.
+				// Otherwise, just remove spaces and hyphens
 				formattedQuery = formattedQuery.replace(/[\s\-()]+/g, '');
+			}
+
+			// Ensure no '+' exists in the final query unless the user intentionally typed it
+			if (!rawQuery.includes('+')) {
+				formattedQuery = formattedQuery.replace(/\+/g, '');
 			}
 		}
 
