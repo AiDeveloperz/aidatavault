@@ -251,15 +251,7 @@ export default function Home() {
 						</a>
 					</div>
 
-					{/* Credits */}
-					<div className="mt-8 text-center text-xs text-(--text-muted) flex flex-col items-center gap-1 opacity-75 hover:opacity-100 transition-opacity">
-						<p>
-							Developed by <a href="https://github.com/AiDeveloperz" target="_blank" rel="noopener noreferrer" className="text-(--text-primary) hover:text-(--accent-light) transition-colors underline decoration-white/20 underline-offset-2 font-medium">AiDeveloperz</a>
-						</p>
-						<p>
-							Frontend Design by <a href="https://github.com/farazz23" target="_blank" rel="noopener noreferrer" className="text-(--text-primary) hover:text-(--accent-light) transition-colors underline decoration-white/20 underline-offset-2 font-medium">farazz23</a>
-						</p>
-					</div>
+
 				</div>
 			)}
 
