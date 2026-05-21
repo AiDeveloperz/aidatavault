@@ -20,12 +20,23 @@ interface PaymentSession {
 const API_URL        = process.env.NEXT_PUBLIC_API_URL        || '';
 const PAYMENT_AMOUNT = process.env.NEXT_PUBLIC_PAYMENT_AMOUNT || '100';
 
+
+
 export default function PaymentPanel({ searchResult, onPaymentComplete, onBack }: Props) {
   const [step, setStep]       = useState<'info' | 'paying' | 'verifying'>('info');
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState<string | null>(null);
   const [session, setSession] = useState<PaymentSession | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+
+  // Coupon state
+  const [showCoupon, setShowCoupon] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError]     = useState<string | null>(null);
+  const [couponSuccess, setCouponSuccess] = useState<string | null>(null);
+
+
 
   // ── Initiate payment ────────────────────────────────────────────────────────
   const initiatePayment = async () => {
@@ -85,6 +96,35 @@ export default function PaymentPanel({ searchResult, onPaymentComplete, onBack }
       setStep('paying');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // ── Apply free coupon ────────────────────────────────────────────────────────
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    setCouponError(null);
+    setCouponSuccess(null);
+    try {
+      const res = await fetch(`${API_URL}/api/payment/coupon`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${searchResult.token}`,
+        },
+        body: JSON.stringify({ searchId: searchResult.searchId, couponCode: couponCode.trim(), token: searchResult.token }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCouponError(data.error || 'Invalid coupon code.');
+        return;
+      }
+      setCouponSuccess(data.message || 'Coupon applied! Unlocking results…');
+      setTimeout(() => onPaymentComplete(), 1200);
+    } catch {
+      setCouponError('Network error — please try again.');
+    } finally {
+      setCouponLoading(false);
     }
   };
 
@@ -167,6 +207,57 @@ export default function PaymentPanel({ searchResult, onPaymentComplete, onBack }
                 <div className="text-xs" style={{ color: 'var(--text-muted)' }}>one-time</div>
               </div>
             </div>
+
+            {/* ── Coupon code ──────────────────────────────────────────────── */}
+            <div className="rounded-xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
+              <button
+                type="button"
+                onClick={() => { setShowCoupon(v => !v); setCouponError(null); setCouponSuccess(null); }}
+                className="w-full flex items-center justify-between px-4 py-3 text-sm transition-colors"
+                style={{ background: 'rgba(255,255,255,0.03)', color: 'var(--text-secondary)' }}
+              >
+                <span className="flex items-center gap-2">🎟️ Have a free coupon code?</span>
+                <span style={{ fontSize: '10px' }}>{showCoupon ? '▲' : '▼'}</span>
+              </button>
+
+              {showCoupon && (
+                <div className="px-4 pb-4 pt-3 space-y-3" style={{ background: 'rgba(255,255,255,0.01)' }}>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={e => setCouponCode(e.target.value.toUpperCase())}
+                      placeholder="FREE-XXXXXX"
+                      disabled={couponLoading}
+                      className="flex-1 rounded-lg px-3 py-2 text-sm font-mono tracking-widest outline-none transition-all"
+                      style={{
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        color: 'var(--text-primary)',
+                      }}
+                      onKeyDown={e => e.key === 'Enter' && applyCoupon()}
+                    />
+                    <button
+                      id="apply-coupon-btn"
+                      type="button"
+                      onClick={applyCoupon}
+                      disabled={couponLoading || !couponCode.trim()}
+                      className="px-4 py-2 rounded-lg text-sm font-semibold transition-all disabled:opacity-50"
+                      style={{ background: 'rgba(124,58,237,0.7)', color: 'white', border: '1px solid rgba(124,58,237,0.5)' }}
+                    >
+                      {couponLoading ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" /> : 'Apply'}
+                    </button>
+                  </div>
+                  {couponError && (
+                    <p className="text-xs px-1" style={{ color: 'var(--danger)' }}>⚠ {couponError}</p>
+                  )}
+                  {couponSuccess && (
+                    <p className="text-xs px-1" style={{ color: 'var(--success)' }}>✅ {couponSuccess}</p>
+                  )}
+                </div>
+              )}
+            </div>
+
             <div className="flex gap-3">
               <button className="btn-secondary flex-1" onClick={onBack} disabled={loading}>
                 ← New Search
@@ -186,6 +277,7 @@ export default function PaymentPanel({ searchResult, onPaymentComplete, onBack }
             </div>
           </div>
         )}
+
 
         {/* ── STEP: paying ─────────────────────────────────────────────────── */}
         {step === 'paying' && session && (
